@@ -1,0 +1,245 @@
+clear all
+close all
+clc
+
+% Lire les deux images
+img1 = imread('image_deforme_sin1.jpg');
+img2 = imread('image_non_deforme_sin1.jpg');
+
+% Déterminer les tailles des images
+  [nRows, nCols] = size(img1);
+if ~isequal([nRows, nCols], size(img2))
+    error("Les tailles des images doivent être identiques");
+end
+
+% Déterminer la taille des sous-matrices
+
+nRowsSubMatrix=15;
+nColsSubMatrix=15;
+subMatrixSizerow=floor(nRows/nRowsSubMatrix);
+subMatrixSizecol=floor(nCols/nColsSubMatrix);
+
+X=75/100 %Valeur recouvrement
+
+% Initialiser la matrice des corrélations
+displacementVectors = zeros(nRowsSubMatrix, nColsSubMatrix, 2);
+
+% Boucle pour diviser les images en sous-matrices (sauf sur derniere ligne et
+% colonne)
+
+for i = 1:nRowsSubMatrix
+    for j = 1:nColsSubMatrix
+        if i== nRowsSubMatrix
+            iStart = (i-1)*subMatrixSizerow+1;
+            iEnd = nRows;
+            jStart = 1+subMatrixSizecol*(j-1);
+            jEnd = subMatrixSizecol*j-X*subMatrixSizecol;
+
+          subMatrix1 = img1(iStart:iEnd, jStart:jEnd, :);
+          subMatrix2 = img2(iStart:iEnd, jStart:jEnd, :);
+
+          % Calculer la corrélation entre les sous-matrices
+          IMG1 = fft2(subMatrix1);
+          IMG2 = fft2(subMatrix2);
+
+          % Multiplication
+          Corr = IMG2 .* conj(IMG1); % corrélation
+
+          % Passage dans l'espace direct
+          C = fftshift(fftshift(ifft2(Corr), 1), 2);
+
+          % Trouver le maximum de la corrélation
+          [~, maxIndex] = max(C(:));
+          [row, col] = ind2sub(size(C), maxIndex);
+
+          % Calculer le vecteur de déplacement
+          row = row - size(C, 1) / 2;
+          col = col - size(C, 2) / 2;
+
+          % Stocker le résultat dans la matrice des corrélations
+          correlationMatrix(i, j) = real(max(C(:)));
+
+          % Stocker le vecteur de déplacement
+          displacementVectors(i, j, :) = [row, col];
+
+        elseif j== nColsSubMatrix
+
+            iStart = subMatrixSizerow*(i-1)+1;
+            iEnd = subMatrixSizerow*i+X*subMatrixSizerow;
+            jStart = subMatrixSizecol*(j-1)+1;
+            jEnd = nCols;
+
+          subMatrix1 = img1(iStart:iEnd, jStart:jEnd, :);
+          subMatrix2 = img2(iStart:iEnd, jStart:jEnd, :);
+
+          % Calculer la corrélation entre les sous-matrices
+          IMG1 = fft2(subMatrix1);
+          IMG2 = fft2(subMatrix2);
+
+          % Multiplication
+          Corr = IMG2 .* conj(IMG1); % corrélation
+
+          % Passage dans l'espace direct
+          C = fftshift(fftshift(ifft2(Corr), 1), 2);
+
+          % Trouver le maximum de la corrélation
+          [~, maxIndex] = max(C(:));
+          [row, col] = ind2sub(size(C), maxIndex);
+
+          % Calculer le vecteur de déplacement
+          row = row - size(C, 1) / 2;
+          col = col - size(C, 2) / 2;
+
+          % Stocker le résultat dans la matrice des corrélations
+          correlationMatrix(i, j) = real(max(C(:)));
+
+          % Stocker le vecteur de déplacement
+          displacementVectors(i, j, :) = [row, col];
+
+        elseif j== nColsSubMatrix & i== nRowsSubMatrix
+
+            iStart = subMatrixSizerow*(i-1)+1;
+            iEnd = nRows;
+            jStart = subMatrixSizecol*(j-1)+1;
+            jEnd = nCols;
+            subMatrix1 = img1(iStart:iEnd, jStart:jEnd, :);
+            subMatrix2 = img2(iStart:iEnd, jStart:jEnd, :);
+
+            % Calculer la corrélation entre les sous-matrices
+            IMG1 = fft2(subMatrix1);
+            IMG2 = fft2(subMatrix2);
+
+            % Multiplication
+            Corr = IMG2 .* conj(IMG1); % corrélation
+
+            % Passage dans l'espace direct
+            C = fftshift(fftshift(ifft2(Corr), 1), 2);
+
+            % Trouver le maximum de la corrélation
+            [~, maxIndex] = max(C(:));
+            [row, col] = ind2sub(size(C), maxIndex);
+
+            % Calculer le vecteur de déplacement
+            row = row - size(C, 1) / 2;
+            col = col - size(C, 2) / 2;
+
+            % Stocker le résultat dans la matrice des corrélations
+            correlationMatrix(i, j) = real(max(C(:)));
+
+            % Stocker le vecteur de déplacement
+            displacementVectors(i, j, :) = [row, col];
+
+        else
+
+
+        iStart = subMatrixSizerow*(i-1)+1;
+        iEnd = subMatrixSizerow*i+X*subMatrixSizerow;
+        jStart = subMatrixSizecol*(j-1)+1;
+        jEnd = subMatrixSizecol*j+X*subMatrixSizerow;
+
+          subMatrix1 = img1(iStart:iEnd, jStart:jEnd, :);
+          subMatrix2 = img2(iStart:iEnd, jStart:jEnd, :);
+
+          % Calculer la corrélation entre les sous-matrices
+          IMG1 = fft2(subMatrix1);
+          IMG2 = fft2(subMatrix2);
+
+          % Multiplication
+          Corr = IMG2 .* conj(IMG1); % corrélation
+
+          % Passage dans l'espace direct
+          C = fftshift(fftshift(ifft2(Corr), 1), 2);
+
+          % Trouver le maximum de la corrélation
+          [~, maxIndex] = max(C(:));
+          [row, col] = ind2sub(size(C), maxIndex);
+
+          % Calculer le vecteur de déplacement
+          row = row - size(C, 1) / 2;
+          col = col - size(C, 2) / 2;
+
+          % Stocker le résultat dans la matrice des corrélations
+          correlationMatrix(i, j) = real(max(C(:)));
+
+          % Stocker le vecteur de déplacement
+          displacementVectors(i, j, :) = [row, col];
+        end
+    end
+end
+
+
+
+
+% Affichage de la matrice de corrélation
+figure (1);
+imagesc(correlationMatrix);
+set(gca, 'YDir','normal')
+xlabel('X')
+ylabel('Y')
+hold on
+colorbar;
+
+
+% Affichage des vecteurs de déplacement
+figure (2);
+quiver(displacementVectors(:, :, 2), displacementVectors(:, :, 1));
+xlabel('X')
+ylabel('Y')
+% xlim([0 nColsSubMatrix]);
+% ylim([0 nRowsSubMatrix]);
+
+figure (3);
+imagesc(correlationMatrix);
+set(gca, 'YDir','normal')
+xlabel('X')
+ylabel('Y')
+hold on
+quiver(displacementVectors(:, :, 2), displacementVectors(:, :, 1));
+% xlim([0 nColsSubMatrix]);
+% ylim([0 nRowsSubMatrix]);
+hold off
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Détermination célérité onde de cisaillement
+
+
+lec=0;
+lec2=0;
+moyenne=zeros(1,nColsSubMatrix); %Matrice de sauvegarde des moyennes
+moyenne2=0;
+for lec2=1:nColsSubMatrix
+    for lec=1:nRowsSubMatrix
+        moyenne(1,lec2)=moyenne(1,lec2)+displacementVectors(lec,lec2,1);  %Receuil de toutes les composantes verticales des flèches
+    end
+end
+
+for k=1:length(moyenne)
+    moyenne2=moyenne2+moyenne(1,k);
+end
+
+
+moyenne(1,:)=moyenne(1,:)/nRowsSubMatrix; %Calcul de la moyenne pour chacune des colonnes
+moyenne2=moyenne2/length(moyenne2);
+vecteur=1:1:length(moyenne);
+%plot(vecteur,moyenne)
+
+% Ici, nous allons convertir les pixels en distance mesurables.
+%Nous savons que Xpixels correspondent à Y cm
+
+T=1/170; %Délai entre les deux images sélectionnées
+X=1280;
+Y=2.4;
+%
+deplacement_reel=mean(moyenne*Y/X);
+celerite=abs(deplacement_reel/T);
+
+disp(['La célérité de l onde de cisaillement dans le milieu choisi est:', num2str(celerite)]);
+disp('m/s')
+
+resultat = celerite; % définir le résultat
+phrase = 'La célérité de l`onde de cisaillement dans le milieu choisi est : '; % définir la phrase
+phr = ' m/s';
+message = [phrase, num2str(resultat),phr]; % combiner le résultat et la phrase
+
+% afficher le message dans une fenêtre de dialogue
+msgbox(message, 'Résultat');
